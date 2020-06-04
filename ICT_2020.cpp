@@ -32,6 +32,7 @@ std::vector<std::string> classes;						// [DetecObj] Class init
 
 void SerialRes(SerialStream &Res){						// [SerialComm] Serial Reset if comm has problem
     Res.Open("/dev/ttyTHS2");
+
     Res.SetBaudRate(BaudRate::BAUD_115200);
     Res.SetParity(Parity::PARITY_NONE);
     Res.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
@@ -105,26 +106,26 @@ int main(int argc, char* argv[]){
 	
 	//Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);		// [SerialComm] Read Serial Data
 	//Serial.SerialRcv();
-	/*
-        printf("[SERIAL]Protocol: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
+	
+/*        printf("[SERIAL]Protocol: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
                int(Serial.RECEV_BUF[0]), int(Serial.RECEV_BUF[1]), int(Serial.RECEV_BUF[2]), int(Serial.RECEV_BUF[3]), int(Serial.RECEV_BUF[4]), int(Serial.RECEV_BUF[5]), 
                int(Serial.RECEV_BUF[6]), int(Serial.RECEV_BUF[7]), int(Serial.RECEV_BUF[8]), int(Serial.RECEV_BUF[9]), int(Serial.RECEV_BUF[10]), int(Serial.RECEV_BUF[11]), 
                int(Serial.RECEV_BUF[12]), int(Serial.RECEV_BUF[13]), int(Serial.RECEV_BUF[14]), int(Serial.RECEV_BUF[15]), int(Serial.RECEV_BUF[16]), int(Serial.RECEV_BUF[17]), 
                int(Serial.RECEV_BUF[18]), int(Serial.RECEV_BUF[19]), int(Serial.RECEV_BUF[20]), int(Serial.RECEV_BUF[21]));*/
 
-/*	if(n%100 == 0 || Serial.Serial_Status != true){				// [SerialComm] For prevent Error, reset Serial port every 100 times
+	if(n%30 == 0 || Serial.Serial_Status != true){				// [SerialComm] For prevent Error, reset Serial port every 100 times
 	    Stream.Close();
 	    SerialRes(Stream);
-	}*/
+	}
 
 	cap >> frame;								// [VidProc] Push cap buffer to frame
 	cv::cvtColor(frame, frame, cv::COLOR_YUV2BGR_YV12);
 
 	//if(Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21){		// Detecting Mode
-	    pca9685->setPWM(0, 0, 350);
+	    pca9685->setPWM(1, 0, 350);
 	    DetecDnn(net, frame, blob, classes);
 	//}else{								// Normal Mode
-	//    pca9685->setPWM(0, 0, 390);
+	//    pca9685->setPWM(1, 0, 390);
 	//    VidDraw();
 	//}
 	
@@ -143,7 +144,7 @@ int main(int argc, char* argv[]){
 
     Stream.Close();
     cap.release();
-    pca9685->setPWM(0, 0, 390);
+    pca9685->setPWM(1, 0, 390);
     pca9685->closePCA9685();
     std::cout<<"[SERIAL] End of Mission"<<std::endl;
 
