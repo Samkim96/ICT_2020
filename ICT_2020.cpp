@@ -28,7 +28,7 @@ cv::VideoCapture cap;								// [VidProc] VideoCapture init
 cv::VideoWriter video;								// [VidProc] VideoWriter init
 static const std::string WinName = "ICT_VISION";				// [VidProc] Window Name init
 
-std::vector<std::string> classes;						// [DetecObj] Class init 
+std::vector<std::string> classes;						// [DetecObj] Class init
 
 void SerialRes(SerialStream &Res){						// [SerialComm] Serial Reset if comm has problem
     Res.Open("/dev/ttyTHS2");
@@ -38,7 +38,7 @@ void SerialRes(SerialStream &Res){						// [SerialComm] Serial Reset if comm has
     Res.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
     Res.SetStopBits(StopBits::STOP_BITS_DEFAULT);
     Res.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
-    std::cout << "[SERIAL]Serial Port Restarted\n" << std::endl;
+    std::cout << "[SERIAL] Serial Port Restarted\n" << std::endl;
 }
 
 int main(int argc, char* argv[]){
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
     Stream.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
 
    if (!Stream.good()){
-	std::cout << "[ERROR] Could Not Set the Serial Port" << std::endl;
+	std::cout << "[ERROR!] Could Not Set the Serial Port" << std::endl;
 	exit(1);
     }
 
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]){
     cv::String modelWeights = "yolov3-ICT_best.weights";
 
     // [DetecObj] Load the network
-    std::cout << "[DETECT] Loading Deep Learning Backend: CUDA\n" << std::endl;
+    std::cout << "[DETECT] Loading Deep Learning Backend: CUDA" << std::endl;
     cv::dnn::Net net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);  
     net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);			// [DetecObj] Enable CUDA
     net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]){
 //====================================MLOOP====================================//
 
     while(1){ //Serial.RECEV_BUF[4] < 50){
-	if(n == 0) std::cout << "\n[VIDEO] Video Starting! Press ESC to Exit" << std::endl;
+	if(n == 0) std::cout << "[VIDEO!] Video Starting! Press ESC to Exit" << std::endl;
 	
 	//Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);		// [SerialComm] Read Serial Data
 	//Serial.SerialRcv();
@@ -122,15 +122,16 @@ int main(int argc, char* argv[]){
 	cv::cvtColor(frame, frame, cv::COLOR_YUV2BGR_YV12);
 
 	//if(Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21){		// Detecting Mode
-	    pca9685->setPWM(1, 0, 350);
+	    pca9685->setPWM(1, 0, 355);						// 30 deg. tilt down
 	    DetecDnn(net, frame, blob, classes);
 	//}else{								// Normal Mode
 	//    pca9685->setPWM(1, 0, 390);
 	//    VidDraw();
 	//}
-	
+
 	VidDisp(WinName, frame);	    
 	VidWrite(video, frame);
+	video.write(frame);
 	n++;
 	
 	Serial.SerialTrns();									// [SerialComm] Write Serial Data

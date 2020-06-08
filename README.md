@@ -7,6 +7,10 @@
   * README.md edited
   * PWM channel info changed -> Ch.0 for pan & Ch.1 for tilt
   * Serial port reset rate changed -> 1/100 -> 1/30
+* 2020.06.08 Beta 0.5 Version: Updated README.md and Detection Position Module update
+  * README.md edited
+  * CMakeLists.txt edited
+  * Detect postition module updated
 
 ***
 ## 1. Software Introduction
@@ -80,7 +84,7 @@
 2. After flashing update 
 	>$ sudo apt-get update && upgrade
 
-3. Insttall git & mc
+3. Install git & mc
 	>$ sudo apt install git && mc
 
 4. Install CMake 3.12.0
@@ -91,10 +95,11 @@
 
 5. Install OpneCV 4.2.0
 * [OpenCV 4.2.0](https://github.com/opencv/opencv/tree/4.2.0/ "OpenCV 4.2.0 link"),  [OpenCV CUDA](https://gist.github.com/raulqf/f42c718a658cddc16f9df07ecc627be7 "OpenCV CUDA link")
-	>$ sudo apt-get update && upgrad
+	>$ sudo apt-get update && upgrade
 
 * Generic tools
-	>$ sudo apt install build-essential cmake pkg-config unzip yasm git checkinstall
+	>$ sudo apt install build-essential cmake pkg-config unzip yasm git checkinstall  
+	>$ sudo apt install g++-5
 
 * Image I/O libs
 	>$ sudo apt install libjpeg-dev libpng-dev libtiff-dev
@@ -143,7 +148,7 @@
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;-DOPENCV_EXTRA_MODULES_PATH=/home/nvidia/Programmes/opencv-4.2.0/opencv_contrib/modules \
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;-DCMAKE_C_COMPILER=/usr/bin/gcc-5 -DBUILD_opencv_xfeatures2d=OFF ..
 
-	>$ make -j8  
+	>$ make -j4  
 	>$ sudo make install  
 	>$ sudo /bin/bash -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'  
 	>$ sudo ldconfig  
