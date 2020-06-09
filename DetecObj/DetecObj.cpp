@@ -86,28 +86,32 @@ void DetecDraw(int classId, float conf, int left, int top, int right, int bottom
     cv::Size labelSize = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
     top = std::max(top, labelSize.height);
     putText(frame, label, cv::Point(left, top), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(0,0,0),1);
-    DetecPosi(left, top, right, bottom, frame);
+    DetecPosi(left, top, right, bottom); //, frame);
 }
 
-void DetecPosi(int left, int top, int right, int bottom, cv::Mat& frame)
+void DetecPosi(int left, int top, int right, int bottom) //, cv::Mat& frame)
 {
     double R_0 = 6378137;	
     double E = 0.0818191908425;
-    std::ofstream outFile("Reuslt.txt");
 
     // Focal length, x and y in image frame, Edited
     double focal = 1665;
     double x_i = (right + left)/2 - 960;
     double y_i = (bottom + top)/2 - 540;
 
-    double lat = deg2rad(35.320994), lon = deg2rad(129.010705), alt = 15, hdg = deg2rad(64.7), tilt = deg2rad(30); 				// Lat, Lon, Hdg: deg., Alt: metre
+    // Calculate the position of PNUAV-R 
+    double lat = (Serial.RECEV_BUF[5]*16777216 + Serial.RECEV_BUF[6]*65536 + Serial.RECEV_BUF[7]*256 + Serial.RECEV_BUF[8] - 90000000)/1000000;
+    double lon = (Serial.RECEV_BUF[9]*16777216 + Serial.RECEV_BUF[10]*65536 + Serial.RECEV_BUF[11]*256 + Serial.RECEV_BUF[12] - 90000000)/1000000;
+    double alt = (Serial.RECEV_BUF[13]*256 + Serial.RECEV_BUF[14])/100;
+    double hdg = (Serial.RECEV_BUF[15]*256 + Serial.RECEV_BUF[16])/100;
+    double tilt = deg2rad(30);
 
-    //double Temp[3][3];
+    //double lat = deg2rad(35.320994), lon = deg2rad(129.010705), alt = 15, hdg = deg2rad(64.7), tilt = deg2rad(30); 	// Lat, Lon, Hdg: deg., Alt: metre
 
-    double C_nb[3][3] = {{cos(hdg), sin(hdg), 0}, {-sin(hdg), cos(hdg), 0}, {0, 0, 1}};	// Conversion matrix NED to Body
+    double C_nb[3][3] = {{cos(hdg), sin(hdg), 0}, {-sin(hdg), cos(hdg), 0}, {0, 0, 1}};					// Conversion matrix NED to Body
 
     // ecef2ned
-    double R_E = R_0/sqrt(1 - (E*sin(lat))*(E*sin(lat)));				// Radius at given position
+    double R_E = R_0/sqrt(1 - (E*sin(lat))*(E*sin(lat)));								// Radius at given position
 
     double r_ebe[3] = {(R_E + alt)*cos(lat)*cos(lon), (R_E + alt)*cos(lat)*sin(lon), ((1 - E*E)*R_E + alt)*sin(lat)};	// ECEF position
     double C_en[3][3] = {{-sin(lat)*cos(lon), -sin(lat)*sin(lon), cos(lat)}, {-sin(lon), cos(lon), 0}, {-cos(lat)*cos(lon), -cos(lat)*sin(lon), -sin(lat)}};	// Conversion matrix ECEF to NED
@@ -144,7 +148,7 @@ void DetecPosi(int left, int top, int right, int bottom, cv::Mat& frame)
     for(int i = 0; i < 3; i++){Body_UAV[i] = C_eb[i][0]*r_ebe[0] + C_eb[i][1]*r_ebe[1] + C_eb[i][2]*r_ebe[2];}
 
     double J = (((x_i/focal)*(alt - 0.6))/(tan(tilt) + (y_i/focal)))*tan(tilt)*1000;			// image frame x in World frame
-    double I = (x_i/focal)*(alt - (J + 0.6))/tan(tilt);					// image frame y in Wordl frmae
+    double I = (x_i/focal)*(alt - (J + 0.6))/tan(tilt);							// image frame y in Wordl frmae
     double x = (alt - (J + 0.6))/tan(tilt) + J*tan(tilt);						// Distance between imgae centre to UAV centre
 
     double Body_obs[3] = {Body_UAV[0] + x, Body_UAV[1] + I, Body_UAV[2] - alt + 0.6};	// Position of obstacle in UAV body frame
@@ -156,25 +160,26 @@ void DetecPosi(int left, int top, int right, int bottom, cv::Mat& frame)
     double b = R_0 - f*R_0;
     double lon_obs = atan2(ECEF_obs[1], ECEF_obs[0]);					// clambda
     double p = sqrt(ECEF_obs[0]*ECEF_obs[0] + ECEF_obs[1]*ECEF_obs[1]);
-    //double h_old = 0.0;
     double lat_obs = atan2(ECEF_obs[2], p*(1.0-E*E));					// theta
     double cs = cos(lat_obs);
     double sn = sin(lat_obs);
     double N = (R_0*R_0)/sqrt((R_0*cs)*(R_0*cs) + (b*sn)*(b*sn));
-    //double h = p/cs - N;
     double alt_obs = p/cos(lat_obs)-N;
+
+    lat_obs_1 = rad2deg(lat_obs);
+    lon_obs_1 = rad2deg(lon_obs);
 
     system("clear");
     std::cout << "x: " << x << " " << "y: " << I << std::endl;
-    printf("Longitude: %.6f \n", rad2deg(lon_obs));
-    printf("Latitude: %.6f \n", rad2deg(lat_obs));
+    printf("Latitude: %.6f \n", lat_obs_1);
+    printf("Longitude: %.6f \n", lon_obs_1);
 
-    std::string label_Lon = cv::format("Longitude: %.6f", rad2deg(lon_obs));
-    std::string label_Lat = cv::format("Latitude: %.6f", rad2deg(lat_obs));
-    cv::putText(frame, label_Lon, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
+    std::string label_Lat = cv::format("Latitude: %.6f", lat_obs_1);
+    std::string label_Lon = cv::format("Longitude: %.6f", lon_obs_1);
     cv::putText(frame, label_Lat, cv::Point(0, 45), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
+    cv::putText(frame, label_Lon, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
 
-    outFile << "Longitude: " << rad2deg(lon_obs) << "  " << "Latitude: " << rad2deg(lat_obs) << "\n" << std::endl;
+    outFile << "Latitude: " << std::fixed << rad2deg(lat_obs) << "  " << "Longitude: " << std::fixed << rad2deg(lon_obs) << std::endl;
 
 }
 

@@ -1,65 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <string>
-
-#include <opencv2/dnn.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-
-#include <SerialPort.h>
-#include <SerialStream.h>
-
-#include "SerialComm.h"
-#include "VidProc.h"
-#include "DetecObj.h"
-#include <JHPWMPCA9685.h>
-
-using namespace LibSerial;
-
-const int Write_BUFFER_SIZE = 33;						// [SerialComm] Size of Write Buffer
-const int Read_BUFFER_SIZE = 22;						// [SerialComm] Size of Read Buffer
-int n = 0;									// [SerialComm] integer for count
-
-cv::VideoCapture cap;								// [VidProc] VideoCapture init
-cv::VideoWriter video;								// [VidProc] VideoWriter init
-static const std::string WinName = "ICT_VISION";				// [VidProc] Window Name init
-
-std::vector<std::string> classes;						// [DetecObj] Class init
-
-void SerialRes(SerialStream &Res){						// [SerialComm] Serial Reset if comm has problem
-    Res.Open("/dev/ttyTHS2");
-
-    Res.SetBaudRate(BaudRate::BAUD_115200);
-    Res.SetParity(Parity::PARITY_NONE);
-    Res.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
-    Res.SetStopBits(StopBits::STOP_BITS_DEFAULT);
-    Res.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
-    std::cout << "[SERIAL] Serial Port Restarted\n" << std::endl;
-}
+#include "ICT_2020.h"
 
 int main(int argc, char* argv[]){
 
 //====================================SERIAL====================================//
-    SerialComm Serial;								// [SerialComm] New SerialComm class "Serial"
+    int n = 0;									// [SerialComm] integer for count
+
+    //SerialComm Serial;								// [SerialComm] New SerialComm class "Serial"
     SerialStream Stream;							// [SerialComm] New SerialStream class "Stream"
-
-    Stream.Open("/dev/ttyTHS2");						// [SerialComm] Open Serial port
-
-    // [SerialComm] Serial port initial setting
-    Stream.SetBaudRate(BaudRate::BAUD_115200);
-    Stream.SetParity(Parity::PARITY_NONE);
-    Stream.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
-    Stream.SetStopBits(StopBits::STOP_BITS_DEFAULT);
-    Stream.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
-
-   if (!Stream.good()){
-	std::cout << "[ERROR!] Could Not Set the Serial Port" << std::endl;
-	exit(1);
-    }
+    SerialInit(Stream);
 
 //====================================GIMBAL====================================//
 
@@ -91,21 +39,20 @@ int main(int argc, char* argv[]){
 
 //====================================VIDEO====================================//
 
-    VidCap(cap, video);								// [VideoProc] Video init and Capture video
-
-    cv::Mat frame, blob;
+    //VidCap(cap, video);							// [VideoProc] Video init and Capture video
+    cv::VideoCapture cap{"ICT_20200608_160538.avi"};				// [VideoProc] Video init from the file
     cv::namedWindow("ICT_VISION", cv::WINDOW_AUTOSIZE);
 
-    //Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);			// [SerialComm] Read Serial data
-    //Serial.SerialRcv();
+    Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);			// [SerialComm] Read Serial data
+    Serial.SerialRcv();
 
 //====================================MLOOP====================================//
 
     while(1){ //Serial.RECEV_BUF[4] < 50){
 	if(n == 0) std::cout << "[VIDEO!] Video Starting! Press ESC to Exit" << std::endl;
 	
-	//Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);		// [SerialComm] Read Serial Data
-	//Serial.SerialRcv();
+	Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);		// [SerialComm] Read Serial Data
+	Serial.SerialRcv();
 	
 /*        printf("[SERIAL]Protocol: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
                int(Serial.RECEV_BUF[0]), int(Serial.RECEV_BUF[1]), int(Serial.RECEV_BUF[2]), int(Serial.RECEV_BUF[3]), int(Serial.RECEV_BUF[4]), int(Serial.RECEV_BUF[5]), 
@@ -115,11 +62,12 @@ int main(int argc, char* argv[]){
 
 	if(n%30 == 0 || Serial.Serial_Status != true){				// [SerialComm] For prevent Error, reset Serial port every 100 times
 	    Stream.Close();
-	    SerialRes(Stream);
+	    SerialInit(Stream);
+   	    std::cout << "[SERIAL] Serial Port Restarted\n" << std::endl;
 	}
 
 	cap >> frame;								// [VidProc] Push cap buffer to frame
-	cv::cvtColor(frame, frame, cv::COLOR_YUV2BGR_YV12);
+	//cv::cvtColor(frame, frame, cv::COLOR_YUV2BGR_YV12);			// [VidProc] Video colour convert for processing
 
 	//if(Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21){		// Detecting Mode
 	    pca9685->setPWM(1, 0, 355);						// 30 deg. tilt down
@@ -131,10 +79,10 @@ int main(int argc, char* argv[]){
 
 	VidDisp(WinName, frame);	    
 	VidWrite(video, frame);
-	video.write(frame);
+	//video.write(frame);
 	n++;
 	
-	Serial.SerialTrns();									// [SerialComm] Write Serial Data
+	Serial.SerialTrns();							// [SerialComm] Write Serial Data
 	Stream.write(reinterpret_cast<const char *>(Serial.TRANS_BUF), Write_BUFFER_SIZE);
 
 	if(cv::waitKey(1) == 27) //27 is ESC
@@ -144,6 +92,7 @@ int main(int argc, char* argv[]){
 //====================================INITI====================================//
 
     Stream.Close();
+    outFile.close();
     cap.release();
     pca9685->setPWM(1, 0, 390);
     pca9685->closePCA9685();

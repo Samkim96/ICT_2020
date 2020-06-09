@@ -11,6 +11,13 @@
   * README.md edited
   * CMakeLists.txt edited
   * Detect postition module updated
+* 2020.06.09 Beta 1.0 Version: Main Header File and Detection Module update
+  * CMakeLists.txt edited
+  * ICT_2020.h created to use global variables as extern
+  * Serial initiating and reset function re-declared
+  * Detection result text file loggin modified
+  * Detection module modifed for use serial data
+  * Serial module modified for detected position data
 
 ***
 ## 1. Software Introduction
