@@ -43,27 +43,23 @@ int main(int argc, char* argv[]){
     cv::VideoCapture cap{"ICT_20200608_160538.avi"};				// [VideoProc] Video init from the file
     cv::namedWindow("ICT_VISION", cv::WINDOW_AUTOSIZE);
 
-    Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);			// [SerialComm] Read Serial data
-    Serial.SerialRcv();
+    //Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);			// [SerialComm] Read Serial data
 
 //====================================MLOOP====================================//
 
     while(1){ //Serial.RECEV_BUF[4] < 50){
-	if(n == 0) std::cout << "[VIDEO!] Video Starting! Press ESC to Exit" << std::endl;
-	
-	Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);		// [SerialComm] Read Serial Data
-	Serial.SerialRcv();
-	
-/*        printf("[SERIAL]Protocol: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
-               int(Serial.RECEV_BUF[0]), int(Serial.RECEV_BUF[1]), int(Serial.RECEV_BUF[2]), int(Serial.RECEV_BUF[3]), int(Serial.RECEV_BUF[4]), int(Serial.RECEV_BUF[5]), 
-               int(Serial.RECEV_BUF[6]), int(Serial.RECEV_BUF[7]), int(Serial.RECEV_BUF[8]), int(Serial.RECEV_BUF[9]), int(Serial.RECEV_BUF[10]), int(Serial.RECEV_BUF[11]), 
-               int(Serial.RECEV_BUF[12]), int(Serial.RECEV_BUF[13]), int(Serial.RECEV_BUF[14]), int(Serial.RECEV_BUF[15]), int(Serial.RECEV_BUF[16]), int(Serial.RECEV_BUF[17]), 
-               int(Serial.RECEV_BUF[18]), int(Serial.RECEV_BUF[19]), int(Serial.RECEV_BUF[20]), int(Serial.RECEV_BUF[21]));*/
+	if(n == 0) std::cout << "[VIDEO!] Starting Video! Press ESC to Exit" << std::endl;
 
-	if(n%30 == 0 || Serial.Serial_Status != true){				// [SerialComm] For prevent Error, reset Serial port every 100 times
-	    Stream.Close();
-	    SerialInit(Stream);
-   	    std::cout << "[SERIAL] Serial Port Restarted\n" << std::endl;
+	if(n%100 == 0 || Serial.Serial_Status != true){				// [SerialComm] For prevent Error, reset Serial port every 100 times
+	    //Stream.Close();
+	    //SerialInit(Stream);
+	    Stream.read((char*)Serial.RECEV_BUF, Read_BUFFER_SIZE);		// [SerialComm] Read Serial Data
+
+            printf("[SERIAL] %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
+                   int(Serial.RECEV_BUF[0]), int(Serial.RECEV_BUF[1]), int(Serial.RECEV_BUF[2]), int(Serial.RECEV_BUF[3]), int(Serial.RECEV_BUF[4]), int(Serial.RECEV_BUF[5]), 
+                   int(Serial.RECEV_BUF[6]), int(Serial.RECEV_BUF[7]), int(Serial.RECEV_BUF[8]), int(Serial.RECEV_BUF[9]), int(Serial.RECEV_BUF[10]), int(Serial.RECEV_BUF[11]), 
+                   int(Serial.RECEV_BUF[12]), int(Serial.RECEV_BUF[13]), int(Serial.RECEV_BUF[14]), int(Serial.RECEV_BUF[15]), int(Serial.RECEV_BUF[16]), int(Serial.RECEV_BUF[17]), 
+                   int(Serial.RECEV_BUF[18]), int(Serial.RECEV_BUF[19]), int(Serial.RECEV_BUF[20]), int(Serial.RECEV_BUF[21]));
 	}
 
 	cap >> frame;								// [VidProc] Push cap buffer to frame
@@ -79,7 +75,6 @@ int main(int argc, char* argv[]){
 
 	VidDisp(WinName, frame);	    
 	VidWrite(video, frame);
-	//video.write(frame);
 	n++;
 	
 	Serial.SerialTrns();							// [SerialComm] Write Serial Data

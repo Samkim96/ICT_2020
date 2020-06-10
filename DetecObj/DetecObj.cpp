@@ -100,10 +100,10 @@ void DetecPosi(int left, int top, int right, int bottom) //, cv::Mat& frame)
     double y_i = (bottom + top)/2 - 540;
 
     // Calculate the position of PNUAV-R 
-    double lat = (Serial.RECEV_BUF[5]*16777216 + Serial.RECEV_BUF[6]*65536 + Serial.RECEV_BUF[7]*256 + Serial.RECEV_BUF[8] - 90000000)/1000000;
-    double lon = (Serial.RECEV_BUF[9]*16777216 + Serial.RECEV_BUF[10]*65536 + Serial.RECEV_BUF[11]*256 + Serial.RECEV_BUF[12] - 90000000)/1000000;
-    double alt = (Serial.RECEV_BUF[13]*256 + Serial.RECEV_BUF[14])/100;
-    double hdg = (Serial.RECEV_BUF[15]*256 + Serial.RECEV_BUF[16])/100;
+    double lat = deg2rad((double)(Serial.RECEV_BUF[5]*16777216 + Serial.RECEV_BUF[6]*65536 + Serial.RECEV_BUF[7]*256 + Serial.RECEV_BUF[8] - 90000000)/1000000);
+    double lon = deg2rad((double)(Serial.RECEV_BUF[9]*16777216 + Serial.RECEV_BUF[10]*65536 + Serial.RECEV_BUF[11]*256 + Serial.RECEV_BUF[12] - 180000000)/1000000);
+    double alt = (double)(Serial.RECEV_BUF[13]*256 + Serial.RECEV_BUF[14])/100;
+    double hdg = deg2rad((double)(Serial.RECEV_BUF[15]*256 + Serial.RECEV_BUF[16])/100);
     double tilt = deg2rad(30);
 
     //double lat = deg2rad(35.320994), lon = deg2rad(129.010705), alt = 15, hdg = deg2rad(64.7), tilt = deg2rad(30); 	// Lat, Lon, Hdg: deg., Alt: metre
@@ -170,16 +170,17 @@ void DetecPosi(int left, int top, int right, int bottom) //, cv::Mat& frame)
     lon_obs_1 = rad2deg(lon_obs);
 
     system("clear");
-    std::cout << "x: " << x << " " << "y: " << I << std::endl;
-    printf("Latitude: %.6f \n", lat_obs_1);
-    printf("Longitude: %.6f \n", lon_obs_1);
+    std::cout << "[SERIAL] Lat_UAV: " << std::fixed << rad2deg(lat) << " Lon_UAV: " << rad2deg(lon) << " Alt_UAV: " << alt << " HDG_UAV: " << rad2deg(hdg) << std::endl;
 
-    std::string label_Lat = cv::format("Latitude: %.6f", lat_obs_1);
-    std::string label_Lon = cv::format("Longitude: %.6f", lon_obs_1);
-    cv::putText(frame, label_Lat, cv::Point(0, 45), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
-    cv::putText(frame, label_Lon, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
+    std::cout << "[DETECT] Lat_Obs: " << std::fixed << lat_obs_1 << " Lon_Obs: " << lon_obs_1 << std::endl;
 
-    outFile << "Latitude: " << std::fixed << rad2deg(lat_obs) << "  " << "Longitude: " << std::fixed << rad2deg(lon_obs) << std::endl;
+    std::string label_Lat = cv::format("Lat_Obs: %.6f", lat_obs_1);
+    std::string label_Lon = cv::format("Lon_Obs: %.6f", lon_obs_1);
+    cv::putText(frame, label_Lat, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
+    cv::putText(frame, label_Lon, cv::Point(0, 45), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0));
+
+    outFile << "Lat_UAV: " << std::fixed << rad2deg(lat) << " Lon_UAV: " << rad2deg(lon) << " Alt_UAV: " << alt << " HDG_UAV: " << rad2deg(hdg) 
+            << " Lat_Obs: " << lat_obs_1 << " Lon_Obs: " << lon_obs_1 << std::endl;
 
 }
 

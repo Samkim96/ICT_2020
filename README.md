@@ -18,6 +18,10 @@
   * Detection result text file loggin modified
   * Detection module modifed for use serial data
   * Serial module modified for detected position data
+* 2020.06.10 Beta 1.1 Version: Detection Module and Serial update
+  * Serial communication with FCC for detection modified
+  * Communication rate modified
+  * Detection result file and print-out modified
 
 ***
 ## 1. Software Introduction
