@@ -22,6 +22,8 @@
   * Serial communication with FCC for detection modified
   * Communication rate modified
   * Detection result file and print-out modified
+* 2020.06.16 Beta 1.2 Version: Minor Update
+  * All header and cpp files modified to statified the Google C++ Style Guide
 
 ***
 ## 1. Software Introduction

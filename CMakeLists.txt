@@ -5,10 +5,6 @@ set(CMAKE_CXX_STANDARD_REQUIERED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "-o3")
 
-#configure_file(ICT.names ICT.names COPYONLY)
-#configure_file(yolov3-ICT.cfg yolov3-ICT.cfg COPYONLY)
-#configure_file(yolov3-ICT_best.weights yolov3-ICT_best.weights COPYONLY)
-
 project(ICT_2020)
 
 include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/SerialComm ${PROJECT_SOURCE_DIR}/VidProc ${PROJECT_SOURCE_DIR}/DetecObj ${PROJECT_SOURCE_DIR}/Gimbal)
