@@ -2,7 +2,7 @@
  * @file   DetecObj.h								*
  * @date   16th JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
- * @brief  Software for the ICT Project 2020 flight tests, video processing	*
+ * @brief  Software for the ICT Project 2020 flight tests, Detecting Object	*
  *******************************************************************************/
 
 #ifndef ICT_DetecObj_H_
@@ -26,7 +26,7 @@
 #define PI 		3.14159265								// PI
 
 extern unsigned char TRANS_BUF[33], RECEV_BUF[22];						// [SERIAL] Buffer init
-extern SerialComm Serial;									// [SERIAL] New SerialComm class "Serial"
+extern int RECEV_BUF_C[22];									// [SERIAL] New SerialComm class "Serial"
 extern cv::Mat frame, blob;									// [ VIDEO] VideoMat init
 extern std::ofstream outFile;									// [DETECT] Result file init
 

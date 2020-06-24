@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   ICT_2020.cpp								*
- * @date   16th JUN 2020							*
+ * @date   24th JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, main cpp		*
  *******************************************************************************/
@@ -12,7 +12,8 @@ int main( int argc, char* argv[] )
 /*************************************SERIAL************************************/
 
     // [SERIAL] New SerialStream class "Stream"
-    SerialStream Stream;
+    SerialComm Serial;
+    LibSerial::SerialStream Stream;
     SerialInit( Stream );
 
 /*************************************GIMBAL************************************/
@@ -47,69 +48,76 @@ int main( int argc, char* argv[] )
 /*************************************VIDEO*************************************/
 
     // [ VIDEO] Video init and Capture video
-    //VidCap( cap, video );
-    cv::VideoCapture cap{ "ICT_20200608_160538.avi" };						// [ VIDEO] Video init from the file
+    VidCap( cap, video );
+    //cv::VideoCapture cap{ "ICT_20200608_160538.avi" };					// [ VIDEO] Video init from the file
     cv::namedWindow( "ICT_VISION", cv::WINDOW_AUTOSIZE );
 
     // [SERIAL] Read Serial data
-    //Stream.read( (char*)Serial.RECEV_BUF, Read_BUFFER_SIZE );
+    std::cout << "[SERIAL] Waiting for Protocol" << std::endl;
+    Stream.read( (char*)Serial.RECEV_BUF, READ_BUFFER_SIZE );
 
 /*************************************MLOOP*************************************/
 
     int n = 0;											// [SERIAL] integer for count
+    double ts, te = 0;
 
-    while ( 1 ) //( Serial.RECEV_BUF[4] < 50 )
+    while ( Serial.RECEV_BUF[4] < 50 )
 	{
+	    ts = cv::getTickCount();
+
 	    if ( n == 0 ) std::cout << "[ VIDEO] Starting Video! Press ESC to Exit" << std::endl;
 
-	    // [SERIAL] For prevent Error, reset Serial port every 100 times
-	    if ( n % 100 == 0 || Serial.Serial_Status != true )
+	    // [SERIAL] Read Serial Data, Buffer parsing speed from FCC must slower than the main loop speed (5Hz)
+	    Stream.read( (char*)Serial.RECEV_BUF, READ_BUFFER_SIZE );
+
+	    for ( int i = 0; i < READ_BUFFER_SIZE; ++i )
 	    {
-		//Stream.Close();
-		//SerialInit( Stream );
-
-		// [SERIAL] Read Serial Data
-		Stream.read( (char*)Serial.RECEV_BUF, Read_BUFFER_SIZE );
-
-		printf( "[SERIAL] %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
-			int( Serial.RECEV_BUF[0] ), int( Serial.RECEV_BUF[1] ), int( Serial.RECEV_BUF[2] ), int( Serial.RECEV_BUF[3] ), 
-			int( Serial.RECEV_BUF[4] ), int( Serial.RECEV_BUF[5] ), int( Serial.RECEV_BUF[6] ), int( Serial.RECEV_BUF[7] ), 
-			int( Serial.RECEV_BUF[8] ), int( Serial.RECEV_BUF[9] ), int( Serial.RECEV_BUF[10] ), int( Serial.RECEV_BUF[11] ), 
-			int( Serial.RECEV_BUF[12] ), int( Serial.RECEV_BUF[13] ), int( Serial.RECEV_BUF[14] ), int( Serial.RECEV_BUF[15] ), 
-			int( Serial.RECEV_BUF[16] ), int( Serial.RECEV_BUF[17] ), int( Serial.RECEV_BUF[18] ), int( Serial.RECEV_BUF[19] ), 
-			int( Serial.RECEV_BUF[20] ), int( Serial.RECEV_BUF[21] ) );
+		RECEV_BUF_C[i] = int( Serial.RECEV_BUF[i] );
 	    }
 
-	    // [ VIDEO] Push cap buffer to frame
+	    printf( "[SERIAL] %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d \n", 
+		    int( Serial.RECEV_BUF[ 0] ), int( Serial.RECEV_BUF[ 1] ), int( Serial.RECEV_BUF[ 2] ), int( Serial.RECEV_BUF[ 3] ), 
+		    int( Serial.RECEV_BUF[ 4] ), int( Serial.RECEV_BUF[ 5] ), int( Serial.RECEV_BUF[ 6] ), int( Serial.RECEV_BUF[ 7] ), 
+		    int( Serial.RECEV_BUF[ 8] ), int( Serial.RECEV_BUF[ 9] ), int( Serial.RECEV_BUF[10] ), int( Serial.RECEV_BUF[11] ), 
+		    int( Serial.RECEV_BUF[12] ), int( Serial.RECEV_BUF[13] ), int( Serial.RECEV_BUF[14] ), int( Serial.RECEV_BUF[15] ), 
+		    int( Serial.RECEV_BUF[16] ), int( Serial.RECEV_BUF[17] ), int( Serial.RECEV_BUF[18] ), int( Serial.RECEV_BUF[19] ), 
+		    int( Serial.RECEV_BUF[20] ), int( Serial.RECEV_BUF[21] ) );
+
+	    std::cout << "Trigger: " << int ( Serial.RECEV_BUF[ 4] ) << std::endl;
+
+	    // [ VIDEO] Push cap buffer to frame and break if frame is empty
 	    cap >> frame;
+	    if ( frame.empty() ) break;
 
 	    // [ VIDEO] Video colour convert for processing
-	    //cv::cvtColor( frame, frame, cv::COLOR_YUV2BGR_YV12 );
+	    cv::cvtColor( frame, frame, cv::COLOR_YUV2BGR_YV12 );
 
 	    // [DETECT] Detecting object mode
-	    //if ( Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21 )
-	    //{
+	    if ( Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21 )
+	    {
 		pca9685->setPWM( 1, 0, 355 );							// 30 deg. tilt down
 		DetecDnn( net, frame, blob, classes );
-	    //}
+	    }
 	    // [DETECT] Normal mode
-	    //else
-	    //{
-		//pca9685->setPWM( 1, 0, 390 );
-		//VidDraw();
-	    //}
+	    else
+	    {
+		pca9685->setPWM( 1, 0, 390 );
+		te = cv::getTickCount();
+		VidDraw( ts, te, frame );
+	    }
 
-	    VidDisp( WinName, frame );	    
+	    VidDisp( WinName, frame );
 	    VidWrite( video, frame );
 	
 	    ++n;
 	
 	    // [SERIAL] Write Serial Data
 	    Serial.SerialTrns();
-	    Stream.write( reinterpret_cast<const char*>( Serial.TRANS_BUF ), Write_BUFFER_SIZE );
+	    Stream.write( reinterpret_cast<const char*>( Serial.TRANS_BUF ), WRITE_BUFFER_SIZE );
 
 	    // [ VIDEO] Break if ESC key is entered
-	    if ( cv::waitKey( 1 ) == 27 ) break;	
+	    if ( cv::waitKey( 1 ) == 27 ) break;
+
 	}
 
 /*************************************INITI*************************************/

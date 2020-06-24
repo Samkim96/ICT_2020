@@ -2,7 +2,7 @@
  * @file   SerialComm.h								*
  * @date   16th JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
- * @brief  Software for the ICT Project 2020 flight tests, video processing	*
+ * @brief  Software for the ICT Project 2020 flight tests, Serial Communication	*
  *******************************************************************************/
 
 #ifndef ICT_SerialComm_H_

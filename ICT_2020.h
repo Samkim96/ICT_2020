@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   ICT_2020.h								*
- * @date   16th JUN 2020							*
+ * @date   24th JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, main header		*
  *******************************************************************************/
@@ -24,10 +24,10 @@
 #include "VidProc.h"
 #include "DetecObj.h"
 
-using namespace LibSerial;
+const int WRITE_BUFFER_SIZE = 33;							// [SERIAL] Size of Write Buffer
+const int READ_BUFFER_SIZE  = 22;							// [SERIAL] Size of Read Buffer
 
-const int Write_BUFFER_SIZE = 33;							// [SERIAL] Size of Write Buffer
-const int Read_BUFFER_SIZE  = 22;							// [SERIAL] Size of Read Buffer
+int RECEV_BUF_C[22];
 
 cv::VideoCapture cap;									// [ VIDEO] VideoCapture init
 cv::VideoWriter video;									// [ VIDEO] VideoWriter init
@@ -38,17 +38,16 @@ double lat_obs_1, lon_obs_1, lat_obs_2, lon_obs_2, lat_obs_3, lon_obs_3;		// [DE
 std::vector<std::string> classes;							// [DETECT] Class init
 std::ofstream outFile( "Reuslt.txt" );							// [DETECT] Result file init
 
-SerialComm Serial;									// [SERIAL] New SerialComm class "Serial"
-
 // [SERIAL] Serial port initial setting
-void SerialInit( SerialStream &Stream )
+void SerialInit( LibSerial::SerialStream &Stream )
 {
+    std::cout << "[SERIAL] Setting the Serial Port ttyTHS2" << std::endl;
     Stream.Open( "/dev/ttyTHS2" );							// [SERIAL] Open Serial port ttyTHS2
-    Stream.SetBaudRate( BaudRate::BAUD_115200 );
-    Stream.SetParity( Parity::PARITY_NONE );
-    Stream.SetCharacterSize( CharacterSize::CHAR_SIZE_8 );
-    Stream.SetStopBits( StopBits::STOP_BITS_DEFAULT );
-    Stream.SetFlowControl( FlowControl::FLOW_CONTROL_NONE );
+    Stream.SetBaudRate( LibSerial::BaudRate::BAUD_115200 );
+    Stream.SetParity( LibSerial::Parity::PARITY_NONE );
+    Stream.SetCharacterSize( LibSerial::CharacterSize::CHAR_SIZE_8 );
+    Stream.SetStopBits( LibSerial::StopBits::STOP_BITS_DEFAULT );
+    Stream.SetFlowControl( LibSerial::FlowControl::FLOW_CONTROL_NONE );
 
     if ( !Stream.good() )
     {

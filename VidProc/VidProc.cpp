@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   VidProc.cpp								*
- * @date   16th JUN 2020							*
+ * @date   24th JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, video processing	*
  *******************************************************************************/
@@ -29,12 +29,16 @@ void VidCap( cv::VideoCapture &cap, cv::VideoWriter &video )
     cap = cv::VideoCapture( pipe );
     const std::string output_name = "ICT_" + currentDateTime() + ".avi";
     //video = cv::VideoWriter( "ICT_Vision.avi", cv::VideoWriter::fourcc( 'x', 'v', 'i', 'd' ), 4.5, cv::Size( 1920, 1080 ) );
-    video = cv::VideoWriter( output_name, cv::VideoWriter::fourcc( 'x', 'v', 'i', 'd' ), 4.5, cv::Size( 1920, 1080 ) ); //videowriter ( name, codec, fps, size )
+    video = cv::VideoWriter( output_name, cv::VideoWriter::fourcc( 'F', 'M', 'P', '4' ), 4.5, cv::Size( 1920, 1080 ) ); //videowriter ( name, codec, fps, size )
 }
 
-void VidDraw()
+void VidDraw( double ts, double te, cv::Mat &frame )
 {
+    double time = ( ( te - ts ) / cv::getTickFrequency() ) * 1000;
+    double fps = 1 / ( time / 1000 );
 
+    std::string label = cv::format( "Inference time : %.2f ms (%.2f FPS)", time, fps );
+    cv::putText( frame, label, cv::Point( 0, 15 ), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar( 0, 0, 255 ) );
 }
 
 void VidDisp( std::string WinName, cv::Mat &frame )

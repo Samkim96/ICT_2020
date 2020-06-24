@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   VidProc.h								*
- * @date   16th JUN 2020							*
+ * @date   24th JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, video processing	*
  *******************************************************************************/
@@ -18,7 +18,7 @@
 
 // Capture the video frome GoPro using Gstreamer pipeline
 void VidCap( cv::VideoCapture &cap, cv::VideoWriter &write );
-void VidDraw();
+void VidDraw( double ts, double te, cv::Mat &frame );
 void VidDisp( std::string WinName, cv::Mat &frame );
 void VidWrite( cv::VideoWriter &write, cv::Mat &frame );
 

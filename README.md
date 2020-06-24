@@ -24,6 +24,13 @@
   * Detection result file and print-out modified
 * 2020.06.16 Beta 1.2 Version: Minor Update
   * All header and cpp files modified to statified the Google C++ Style Guide
+* 2020.06.24 Beta 1.3 Version: Minor update
+  * Communication delay problem modified
+  * Header file brief modified
+  * Detected object FPS information added
+  * Serial communication variable modified
+  * Video read check modified and video writer format modified
+  * VidDraw function modified to display inference time
 
 ***
 ## 1. Software Introduction

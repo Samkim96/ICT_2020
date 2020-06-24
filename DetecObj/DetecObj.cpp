@@ -1,8 +1,8 @@
 /********************************************************************************
  * @file   DetecObj.cpp								*
- * @date   16th JUN 2020							*
+ * @date   23rd JUN 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
- * @brief  Software for the ICT Project 2020 flight tests, video processing	*
+ * @brief  Software for the ICT Project 2020 flight tests, Detecting Object	*
  *******************************************************************************/
 
 #include "DetecObj.h"
@@ -26,7 +26,9 @@ void DetecDnn( cv::dnn::Net &net, cv::Mat &frame, cv::Mat &blob, std::vector<std
     std::vector<double> layersTimes;
     double freq = cv::getTickFrequency() / 1000;
     double t = net.getPerfProfile( layersTimes ) / freq;
-    std::string label = cv::format( "Inference time for a frame : %.2f ms", t );
+    double fps = 1 / ( t / 1000 );
+
+    std::string label = cv::format( "Inference time : %.2f ms (%.2f FPS)", t, fps );
     cv::putText( frame, label, cv::Point( 0, 15 ), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar( 0, 0, 255 ) );
 }
 
@@ -83,7 +85,7 @@ void DetecProc( cv::Mat &frame, const std::vector<cv::Mat> &outs, std::vector<st
 void DetecDraw( int classId, float conf, int left, int top, int right, int bottom, cv::Mat &frame, std::vector<std::string> classes )
 {
     //Draw a rectangle displaying the bounding box
-    cv::rectangle( frame, cv::Point( left, top ), cv::Point( right, bottom ), cv::Scalar( 255, 178, 50 ), 3 );
+    cv::rectangle( frame, cv::Point( left, top - 10 ), cv::Point( right, bottom ), cv::Scalar( 255, 178, 50 ), 3 );
 
     //Get the label for the class name and its confidence
     std::string label = cv::format( "%.2f", conf );
@@ -112,10 +114,10 @@ void DetecPosi( int left, int top, int right, int bottom )
     double y_i = ( bottom + top )/2 - 540;
 
     // Calculate the position of PNUAV-R 
-    double lat = deg2rad( (double)( Serial.RECEV_BUF[5]*16777216 + Serial.RECEV_BUF[6]*65536 + Serial.RECEV_BUF[7]*256 + Serial.RECEV_BUF[8] - 90000000 )/1000000 );
-    double lon = deg2rad( (double)( Serial.RECEV_BUF[9]*16777216 + Serial.RECEV_BUF[10]*65536 + Serial.RECEV_BUF[11]*256 + Serial.RECEV_BUF[12] - 180000000 )/1000000 );
-    double alt = (double)( Serial.RECEV_BUF[13]*256 + Serial.RECEV_BUF[14] )/100;
-    double hdg = deg2rad( (double)( Serial.RECEV_BUF[15]*256 + Serial.RECEV_BUF[16] )/100 );
+    double lat = deg2rad( (double)( RECEV_BUF_C[5]*16777216 + RECEV_BUF_C[6]*65536 + RECEV_BUF_C[7]*256 + RECEV_BUF_C[8] - 90000000 )/1000000 );
+    double lon = deg2rad( (double)( RECEV_BUF_C[9]*16777216 + RECEV_BUF_C[10]*65536 + RECEV_BUF_C[11]*256 + RECEV_BUF_C[12] - 180000000 )/1000000 );
+    double alt = (double)( RECEV_BUF_C[13]*256 + RECEV_BUF_C[14] )/100;
+    double hdg = deg2rad( (double)( RECEV_BUF_C[15]*256 + RECEV_BUF_C[16] )/100 );
     double tilt = deg2rad( 30 );
 
     //double lat = deg2rad( 35.320994 ), lon = deg2rad( 129.010705 ), alt = 15, hdg = deg2rad( 64.7 ), tilt = deg2rad( 30 ); 	// Lat, Lon, Hdg: deg., Alt: metre
