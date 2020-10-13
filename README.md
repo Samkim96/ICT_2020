@@ -31,6 +31,52 @@
   * Serial communication variable modified
   * Video read check modified and video writer format modified
   * VidDraw function modified to display inference time
+* 2020.08.03 Beta 1.4 Version: Minor update
+  * Communication protocol size modified(Receive 22 to 26)
+  * UNIX time included in protocol
+  * Result logging Data modified, UNIX time added
+  * Video writer frame rate modified 5 FPS to 1 FPS
+  * End protocol (RECEV_BUF[4] == 99) checked
+* 2020.08.03 Beta 1.5 Version: Minor update 2
+  * Now possible to send detection state to FCC
+  * GUI display modified, now displays mission state, lat and lon
+* 2020.08.10 Beta 1.6 Version: Minor update
+  * int cnt added for Global extern
+  * README.md updated for new Jetson and PNUAV systems (Gimbal PWM calibrated)
+* 2020.08.13 Beta 2.0 Version: Major update
+  * Calculated position increasing problem modified
+  * The problem was the local variable "output" in function "matrixmul"
+* 2020.08.20 Beta 3.0 Version: Major update after FT
+  * Calculated position error due to *1000 in DetecObj.cpp/double J modified
+  * DetecObj.cpp had modified to increase the readability
+* 2020.08.21 Beta 4.0 Version: Major update
+  * Position estimation accuracy increased by modifying the algorithm
+  * Now possible to detect multiple obstacles and target simultaneously
+  * Also multiple position calculation and logging now available
+* 2020.08.21 Beta 4.1 Version: Minor update after FT
+  * Position estimation accuracy increased by modifying the algorithm
+  * Calculation in x' modified (cos(tilt))
+* 2020.08.27 Beta 4.2 Version: Minor update after FT
+  * Position estimation accuracy increased by modifying the algorithm
+  * Body-frame x and y bias problem modified
+* 2020.09.04 Beta 4.3 Version: Minor update after FT
+  * Position estimation accuracy increased by modifying the algorithm
+  * Body-frame x and y bias problem modified (x direction bias 0.7m)
+* 2020.09.11 Beta 4.4 Version: Minor update after FT
+  * Modified for the YOLO working when UGV driving the path
+* 2020.09.22 Beta 4.5 Version: Minor update after FT
+  * Obstacle and target all tested
+  * All functions working tested
+  * Display of detected obstacle position modified
+
+* 2020.10.12 Release 1.0 Version: Release version
+  * Obstacle and target all tested
+  * All functions working tested
+  * Displayed information of detection modified
+* 2020.10.13 Release 1.1 Version: Minor update after FT
+  * Displayed information position modifed
+  * Target position update modified
+
 
 ***
 ## 1. Software Introduction
@@ -54,11 +100,12 @@
 ### Hardware
 
 * Nvidia Jetson TX2 with ConnectTech Inc. carrier board
-  * ConnectTech Inc. Elroy (ASG002) for PNUAV-R2
-  * ConnectTech Inc. Astro (ASG001) for PNUAV-R3
+  * ConnectTech Inc. Elroy (ASG002) for PNUAV-R2 (No longer)
+  * ConnectTech Inc. Astro (ASG001) for PNUAV-R4
+  * ConnectTech Inc. Astro (ASG001) for PNUAV-R5
 * Camera and gimbal system
-  * GoPro 3 with Tarot T4-3D gimbal for PNUAV-R2
-  * Tarot Peeper HD 10X with TL10A00 gimbal for PNUAV-R3
+  * Tarot Peeper HD 10X with TL10A00 gimbal for PNUAV-R3 (No longer)
+  * GoPro 3 with Tarot T4-3D gimbal for PNUAV-R4 and R5
 * AVerMedia DarkCrystal HD Capture Mini-PCIe C353
 * SunFounder PCA9685 PWM servo driver
 
@@ -80,9 +127,13 @@
  Tarot T4-3D gimbal gets the PWM signal from PCA9685 through the signal line and PCA9685 communicate with Jetson TX2 using I2C. For the detail, see below.
 * Bus and Channel: Bus 0, Ox44
 * Frequency: 60Hz
-* PWM Channel Info
-  * Pan: Channel 0 (310~470: -90 deg. to 90 deg.)
-  * Tilt: Channel 1 (280~400: -90 deg. to 10 deg.)
+* PWM Channel Info (PNUAV-R4)
+  * Pan: Channel 0 (300~440: -90 deg. to 90 deg.)
+  * Tilt: Channel 1 (260~390: -90 deg. to 10 deg. and 335 for -30 deg.)
+  * Neutral: 370
+* PWM Channel Info (PNUAV-R5)
+  * Pan: Channel 0 (320~460: -90 deg. to 90 deg.)
+  * Tilt: Channel 1 (280~410: -90 deg. to 10 deg. and 355 for -30 deg.)
   * Neutral: 390
 * Connection Info: Use righthandside input ports
 

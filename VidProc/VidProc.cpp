@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   VidProc.cpp								*
- * @date   24th JUN 2020							*
+ * @date   12th OCT 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, video processing	*
  *******************************************************************************/
@@ -29,16 +29,24 @@ void VidCap( cv::VideoCapture &cap, cv::VideoWriter &video )
     cap = cv::VideoCapture( pipe );
     const std::string output_name = "ICT_" + currentDateTime() + ".avi";
     //video = cv::VideoWriter( "ICT_Vision.avi", cv::VideoWriter::fourcc( 'x', 'v', 'i', 'd' ), 4.5, cv::Size( 1920, 1080 ) );
-    video = cv::VideoWriter( output_name, cv::VideoWriter::fourcc( 'F', 'M', 'P', '4' ), 4.5, cv::Size( 1920, 1080 ) ); //videowriter ( name, codec, fps, size )
+    video = cv::VideoWriter( output_name, cv::VideoWriter::fourcc( 'F', 'M', 'P', '4' ), 1, cv::Size( 1920, 1080 ) ); //videowriter ( name, codec, fps, size )
 }
 
 void VidDraw( double ts, double te, cv::Mat &frame )
 {
     double time = ( ( te - ts ) / cv::getTickFrequency() ) * 1000;
     double fps = 1 / ( time / 1000 );
+    double lat = (double)( RECEV_BUF_C[5]*16777216 + RECEV_BUF_C[6]*65536 + RECEV_BUF_C[7]*256 + RECEV_BUF_C[8] - 90000000 )/1000000;
+    double lon = (double)( RECEV_BUF_C[9]*16777216 + RECEV_BUF_C[10]*65536 + RECEV_BUF_C[11]*256 + RECEV_BUF_C[12] - 180000000 )/1000000;
 
-    std::string label = cv::format( "Inference time : %.2f ms (%.2f FPS)", time, fps );
-    cv::putText( frame, label, cv::Point( 0, 15 ), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar( 0, 0, 255 ) );
+    std::string label = cv::format( "  Inference time: %.2f ms (%.2f FPS)", time, fps );
+    std::string label_1 = cv::format( "  STATE        L A T            L O N    " );
+    std::string label_2 = cv::format( "    %d      %.6f      %.6f    ", RECEV_BUF_C[4], lat, lon );
+
+    cv::putText( frame, label, cv::Point( 0, 25 ), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar( 0, 0, 255 ), 2 );
+    cv::putText( frame, label_1, cv::Point( 0, 75 ), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar( 0, 0, 255 ), 2 );
+    cv::putText( frame, label_2, cv::Point( 0, 100 ), cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar( 0, 0, 255 ), 2 );
+
 }
 
 void VidDisp( std::string WinName, cv::Mat &frame )

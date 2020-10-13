@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   ICT_2020.h								*
- * @date   24th JUN 2020							*
+ * @date   9th OCT 2020								*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, main header		*
  *******************************************************************************/
@@ -25,16 +25,21 @@
 #include "DetecObj.h"
 
 const int WRITE_BUFFER_SIZE = 33;							// [SERIAL] Size of Write Buffer
-const int READ_BUFFER_SIZE  = 22;							// [SERIAL] Size of Read Buffer
+const int READ_BUFFER_SIZE  = 26;							// [SERIAL] Size of Read Buffer
 
-int RECEV_BUF_C[22];
+int RECEV_BUF_C[26];
+int detec_state;									// [SERIAL] Detection State
+int cnt = 0;
+int time_out = 0;
 
 cv::VideoCapture cap;									// [ VIDEO] VideoCapture init
 cv::VideoWriter video;									// [ VIDEO] VideoWriter init
 cv::Mat frame, blob;									// [ VIDEO] VideoMat init
 static const std::string WinName = "ICT_VISION";					// [ VIDEO] Window Name init
 
-double lat_obs_1, lon_obs_1, lat_obs_2, lon_obs_2, lat_obs_3, lon_obs_3;		// [DETECT] Detected Obstacle Data
+int obst;										// [DETECT] Detected Obstacle No.
+int left_old, top_old;
+double lat_obs_0, lon_obs_0, lat_obs_1, lon_obs_1, lat_obs_2, lon_obs_2;		// [DETECT] Detected Obstacle LLA
 std::vector<std::string> classes;							// [DETECT] Class init
 std::ofstream outFile( "Reuslt.txt" );							// [DETECT] Result file init
 
@@ -43,7 +48,7 @@ void SerialInit( LibSerial::SerialStream &Stream )
 {
     std::cout << "[SERIAL] Setting the Serial Port ttyTHS2" << std::endl;
     Stream.Open( "/dev/ttyTHS2" );							// [SERIAL] Open Serial port ttyTHS2
-    Stream.SetBaudRate( LibSerial::BaudRate::BAUD_115200 );
+    Stream.SetBaudRate( LibSerial::BaudRate::BAUD_9600 );
     Stream.SetParity( LibSerial::Parity::PARITY_NONE );
     Stream.SetCharacterSize( LibSerial::CharacterSize::CHAR_SIZE_8 );
     Stream.SetStopBits( LibSerial::StopBits::STOP_BITS_DEFAULT );

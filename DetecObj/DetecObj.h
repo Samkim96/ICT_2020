@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   DetecObj.h								*
- * @date   16th JUN 2020							*
+ * @date   21st AUG 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, Detecting Object	*
  *******************************************************************************/
@@ -19,18 +19,21 @@
 #include <opencv2/highgui.hpp>
 #include "SerialComm.h"
 
-#define CONFTHRES 	0.5									// confThreshold
-#define NMSTHRES 	0.4									// nmsThreshold
+#define CONFTHRES 	0.3									// confThreshold Original: 0.5
+#define NMSTHRES 	0.2									// nmsThreshold Original: 0.4
 #define INPW 		416									// inpWidth
 #define INPH 		416									// inpHeight
 #define PI 		3.14159265								// PI
 
-extern unsigned char TRANS_BUF[33], RECEV_BUF[22];						// [SERIAL] Buffer init
-extern int RECEV_BUF_C[22];									// [SERIAL] New SerialComm class "Serial"
+extern unsigned char TRANS_BUF[33], RECEV_BUF[26];						// [SERIAL] Buffer init
+extern int RECEV_BUF_C[26];									// [SERIAL] New SerialComm class "Serial"
+extern int detec_state, cnt;									// [SERIAL] Detection State
 extern cv::Mat frame, blob;									// [ VIDEO] VideoMat init
 extern std::ofstream outFile;									// [DETECT] Result file init
 
-extern double lat_obs_1, lon_obs_1, lat_obs_2, lon_obs_2, lat_obs_3, lon_obs_3;			// [DETECT] Detected Obstacle Data
+extern int left_old, top_old;									// [DETECT] Detected Obstacle No.
+extern int obst;
+extern double lat_obs_0, lon_obs_0, lat_obs_1, lon_obs_1, lat_obs_2, lon_obs_2;			// [DETECT] Detected Obstacle LLA
 
 void DetecDnn( cv::dnn::Net &net, cv::Mat &frame, cv::Mat &blob, std::vector<std::string> classes );
 

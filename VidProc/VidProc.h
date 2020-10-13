@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   VidProc.h								*
- * @date   24th JUN 2020							*
+ * @date   3rd AUG 2020								*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, video processing	*
  *******************************************************************************/
@@ -15,6 +15,8 @@
 #include <opencv2/highgui.hpp>
 #include "gst/gst.h"
 #include "gst/app/gstappsink.h"
+
+extern int RECEV_BUF_C[26];									// [SERIAL] New SerialComm class "Serial"
 
 // Capture the video frome GoPro using Gstreamer pipeline
 void VidCap( cv::VideoCapture &cap, cv::VideoWriter &write );
