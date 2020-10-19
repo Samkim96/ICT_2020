@@ -76,6 +76,8 @@
 * 2020.10.13 Release 1.1 Version: Minor update after FT
   * Displayed information position modifed
   * Target position update modified
+* 2020.10.19 Release 1.2 Version: Minor update after FT
+  * Minor updates in DetecObj
 
 
 ***

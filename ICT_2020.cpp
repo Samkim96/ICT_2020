@@ -110,7 +110,7 @@ int main( int argc, char* argv[] )
 	    // [DETECT] Detecting object mode
 	    if ( Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21 )
 	    {
-		pca9685->setPWM( 1, 0, 335 );							// 30 deg. tilt down
+                pca9685->setPWM( 1, 0, 350 );							// 30 deg. tilt down
 		DetecDnn( net, frame, blob, classes );
 		++ time_out;
 
@@ -121,13 +121,13 @@ int main( int argc, char* argv[] )
 	    // [DETECT] Special just for today
 	    else if ( Serial.RECEV_BUF[4] == 12 || Serial.RECEV_BUF[4] == 22 )
 	    {
-		pca9685->setPWM( 1, 0, 335 );							// 30 deg. tilt down
+                pca9685->setPWM( 1, 0, 350 );							// 30 deg. tilt down
 		DetecDnn( net, frame, blob, classes );
 	    }
 	    // [DETECT] Normal mode
 	    else
 	    {
-		pca9685->setPWM( 1, 0, 370 );
+                pca9685->setPWM( 1, 0, 390 );
 		te = cv::getTickCount();
 		VidDraw( ts, te, frame );
 	    }
@@ -138,7 +138,7 @@ int main( int argc, char* argv[] )
     		detec_state = 0;
 
 		if ( Serial.RECEV_BUF[4] == 30 ){
-		    pca9685->setPWM( 1, 0, 300 );
+                    pca9685->setPWM( 1, 0, 280 );
 		}
 	    }
 
@@ -161,7 +161,7 @@ int main( int argc, char* argv[] )
     Stream.Close();
     outFile.close();
     cap.release();
-    pca9685->setPWM( 1, 0, 370 );
+    pca9685->setPWM( 1, 0, 390 );
     pca9685->closePCA9685();
     std::cout << "[SERIAL] End of Mission" << std::endl;
 
