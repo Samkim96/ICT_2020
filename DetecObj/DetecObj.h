@@ -19,8 +19,8 @@
 #include <opencv2/highgui.hpp>
 #include "SerialComm.h"
 
-#define CONFTHRES 	0.3									// confThreshold Original: 0.5
-#define NMSTHRES 	0.2									// nmsThreshold Original: 0.4
+#define CONFTHRES 	0.15									// confThreshold Original: 0.5
+#define NMSTHRES 	0.1									// nmsThreshold Original: 0.4
 #define INPW 		416									// inpWidth
 #define INPH 		416									// inpHeight
 #define PI 		3.14159265								// PI

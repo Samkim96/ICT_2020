@@ -1,6 +1,6 @@
 /********************************************************************************
  * @file   DetecObj.cpp								*
- * @date   13th OCT 2020							*
+ * @date   12th NOV 2020							*
  * @author Sukkeun Samuel Kim(samkim96@pusan.ac.kr)				*
  * @brief  Software for the ICT Project 2020 flight tests, Detecting Object	*
  *******************************************************************************/
@@ -108,7 +108,7 @@ void DetecDraw( int classId, float conf, int left, int top, int right, int botto
     cv::Size labelSize = cv::getTextSize( label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine );
     top = std::max( top, labelSize.height );
     putText( frame, label, cv::Point( left, top - 30 ), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar( 0,0,0 ), 2 );
-    
+/*
     if ( RECEV_BUF_C[4] == 11 || RECEV_BUF_C[4] == 21 )
     {
         if ( classId == 0 )
@@ -140,13 +140,61 @@ void DetecDraw( int classId, float conf, int left, int top, int right, int botto
         }
 
         ++cnt;
-/*8
-        if ( cnt == 15 )
+
+        if ( cnt == 20 )
         {
             detec_state = 1;
 	    cnt = 0;
-        }*/
-        if ( obst < 2 && cnt == 15 )
+        }
+        else if ( obst == 2 && cnt == 15 )
+        {
+            detec_state = 1;
+            cnt = 0;
+        }
+    }
+*/
+
+    if ( RECEV_BUF_C[4] == 11 )
+    {
+        if ( classId == 0 )
+        {
+            if ( cnt == 0 )
+            {
+                obst = 0;
+                DetecPosi( left, top, right, bottom );
+                left_old = left;
+                top_old = top;
+            }
+            else if ( sqrt( ( left_old - left )*( left_old - left ) + ( top_old - top )*( top_old - top ) ) > 100 )
+            {
+                obst = 1;
+                DetecPosi( left, top, right, bottom );
+            }
+            else
+            {
+                obst = 0;
+                DetecPosi( left, top, right, bottom );
+                left_old = left;
+                top_old = top;
+            }
+            ++cnt;
+        }
+
+        if ( cnt == 10 )
+        {
+            detec_state = 1;
+            cnt = 0;
+        }
+    }
+
+    if ( RECEV_BUF_C[4] == 21 )
+    {
+        obst = 2;
+        DetecPosi( left, top, right, bottom );
+
+        ++cnt;
+
+        if ( cnt == 5 )
         {
             detec_state = 1;
             cnt = 0;
@@ -168,8 +216,13 @@ void DetecPosi( int left, int top, int right, int bottom )
     double lat = deg2rad( (double)( RECEV_BUF_C[5]*16777216 + RECEV_BUF_C[6]*65536 + RECEV_BUF_C[7]*256 + RECEV_BUF_C[8] - 90000000 )/1000000 );
     double lon = deg2rad( (double)( RECEV_BUF_C[9]*16777216 + RECEV_BUF_C[10]*65536 + RECEV_BUF_C[11]*256 + RECEV_BUF_C[12] - 180000000 )/1000000 );
     double alt = (double)( RECEV_BUF_C[13]*256 + RECEV_BUF_C[14] )/100;
-    double hdg = deg2rad( (double)( RECEV_BUF_C[15]*256 + RECEV_BUF_C[16] )/100 ); //+7
+    double hdg = deg2rad( (double)( RECEV_BUF_C[15]*256 + RECEV_BUF_C[16] )/100 - 22 ); // Due to the Heading bias in PNUAV-R
     double tilt = deg2rad( 33 );  //30
+
+    if ( obst == 2 )
+    {
+        hdg = deg2rad( rad2deg( hdg ) - 10 );
+    }
 
     //double lat = deg2rad( 35.321031 ), lon = deg2rad( 129.010656 ), alt = 15.670000, hdg = deg2rad( 23.250000 ), tilt = deg2rad( 35 ); 	// Lat, Lon, Hdg: deg., Alt: metre
 
@@ -231,7 +284,7 @@ void DetecPosi( int left, int top, int right, int bottom )
 
     if ( obst == 2)
     {
-        I = I - 5;
+      //s  I = I - 10;
     }
 
     // Position of obstacle in UAV body frame
@@ -264,11 +317,19 @@ void DetecPosi( int left, int top, int right, int bottom )
 	lat_obs_1 = rad2deg( lat_obs );
 	lon_obs_1 = rad2deg( lon_obs );
     }
-    else if ( obst == 2 )//&& lat_obs_2 < 10 )
+    else if ( obst == 2 ) //&& lat_obs_2 < 10 )
     {
 	lat_obs_2 = rad2deg( lat_obs );
 	lon_obs_2 = rad2deg( lon_obs );
     }
+
+    lat_obs_0 =  35.321467;
+    lon_obs_0 = 129.010468;
+    lat_obs_1 =  35.321424;
+    lon_obs_1 = 129.010429;
+    lat_obs_2 =  35.321294;
+    lon_obs_2 = 129.010651;
+
     
     // [ VIDEO] Display the calculated position on the video
 

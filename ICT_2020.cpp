@@ -105,7 +105,7 @@ int main( int argc, char* argv[] )
 	    // [ VIDEO] Video colour convert for processing
 	    cv::cvtColor( frame, frame, cv::COLOR_YUV2BGR_YV12 );
 
-	    frame.convertTo(frame, -1, 1, -20); // Arrange last int for make darker or brighter
+            frame.convertTo(frame, -1, 1, -40); // Arrange last int for make darker or brighter
 
 	    // [DETECT] Detecting object mode
 	    if ( Serial.RECEV_BUF[4] == 11 || Serial.RECEV_BUF[4] == 21 )
@@ -114,7 +114,7 @@ int main( int argc, char* argv[] )
 		DetecDnn( net, frame, blob, classes );
 		++ time_out;
 
-		if ( time_out == 29 && cnt == 0 ){
+                if ( time_out == 59 && cnt == 0 ){
 		    detec_state = 1;
 		}
 	    }

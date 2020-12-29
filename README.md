@@ -78,6 +78,8 @@
   * Target position update modified
 * 2020.10.19 Release 1.2 Version: Minor update after FT
   * Minor updates in DetecObj
+* 2020.11.12 Release 1.2.1 Version: Alternative version of 1.2
+  * Bug fixed -> counting fixed to address mission sequence failure
 
 
 ***
@@ -103,11 +105,10 @@
 
 * Nvidia Jetson TX2 with ConnectTech Inc. carrier board
   * ConnectTech Inc. Elroy (ASG002) for PNUAV-R2 (No longer)
-  * ConnectTech Inc. Astro (ASG001) for PNUAV-R4
-  * ConnectTech Inc. Astro (ASG001) for PNUAV-R5
+  * ConnectTech Inc. Astro (ASG001) for PNUAV-R4~6
 * Camera and gimbal system
   * Tarot Peeper HD 10X with TL10A00 gimbal for PNUAV-R3 (No longer)
-  * GoPro 3 with Tarot T4-3D gimbal for PNUAV-R4 and R5
+  * GoPro 3 with Tarot T4-3D gimbal for PNUAV-R4~6
 * AVerMedia DarkCrystal HD Capture Mini-PCIe C353
 * SunFounder PCA9685 PWM servo driver
 
@@ -169,6 +170,7 @@
 5. Install OpneCV 4.2.0
 * [OpenCV 4.2.0](https://github.com/opencv/opencv/tree/4.2.0/ "OpenCV 4.2.0 link"),  [OpenCV CUDA](https://gist.github.com/raulqf/f42c718a658cddc16f9df07ecc627be7 "OpenCV CUDA link")
 	>$ sudo apt-get update && upgrade
+* [OpenCV 4.2.0 Contrib](https://github.com/opencv/opencv_contrib/releases/tag/4.2.0/ "OpenCV 4.2.0 Contrib link")
 
 * Generic tools
 	>$ sudo apt install build-essential cmake pkg-config unzip yasm git checkinstall  
@@ -241,13 +243,15 @@
 	>$ 0001-dts-quill-common-enable-uartc-instance  
 	>$ sudo usermod -a -G dialout $USER  
 	>$ sudo usermod -a -G plugdev $USER
+	>$ sudo apt-get install libboost-dev
 
 * In the source folder,
 	>$ ./compile.sh  
 	>$ cd build  
 	>$ sudo make install
 
-7. Avermedia C353 Drvier (For the using of Capture board C353 only)
+7. Avermedia C353 Drvier (For the using of Capture board C353 only, R32.2.1)
+* [C353 Driver](https://drive.google.com/open?id=1zV11Ghf7FFnK728mXTzi_FIrJZew-gO "C353 Driver link")
 	>$ sudo make install  
 	>$ sudo modprobe c353  
 	>$ sudo apt-get install v4l-utils  
