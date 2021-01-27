@@ -80,6 +80,8 @@
   * Minor updates in DetecObj
 * 2020.11.12 Release 1.2.1 Version: Alternative version of 1.2
   * Bug fixed -> counting fixed to address mission sequence failure
+* 2021.01.27 Release 1.2.2 Version: Minor arrangements
+  * Minor arrangements
 
 
 ***
