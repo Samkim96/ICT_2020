@@ -1,97 +1,15 @@
 # Introduction of ICT Vision Software
-***
-## Version Information
 
-* 2020.06.02 Beta 0.0 Version: First Commit
-* 2020.06.04 Beta 0.1 Version: Updated README.md and Minor Update
-  * README.md edited
-  * PWM channel info changed -> Ch.0 for pan & Ch.1 for tilt
-  * Serial port reset rate changed -> 1/100 -> 1/30
-* 2020.06.08 Beta 0.5 Version: Updated README.md and Detection Position Module update
-  * README.md edited
-  * CMakeLists.txt edited
-  * Detect postition module updated
-* 2020.06.09 Beta 1.0 Version: Main Header File and Detection Module update
-  * CMakeLists.txt edited
-  * ICT_2020.h created to use global variables as extern
-  * Serial initiating and reset function re-declared
-  * Detection result text file loggin modified
-  * Detection module modifed for use serial data
-  * Serial module modified for detected position data
-* 2020.06.10 Beta 1.1 Version: Detection Module and Serial update
-  * Serial communication with FCC for detection modified
-  * Communication rate modified
-  * Detection result file and print-out modified
-* 2020.06.16 Beta 1.2 Version: Minor Update
-  * All header and cpp files modified to statified the Google C++ Style Guide
-* 2020.06.24 Beta 1.3 Version: Minor update
-  * Communication delay problem modified
-  * Header file brief modified
-  * Detected object FPS information added
-  * Serial communication variable modified
-  * Video read check modified and video writer format modified
-  * VidDraw function modified to display inference time
-* 2020.08.03 Beta 1.4 Version: Minor update
-  * Communication protocol size modified(Receive 22 to 26)
-  * UNIX time included in protocol
-  * Result logging Data modified, UNIX time added
-  * Video writer frame rate modified 5 FPS to 1 FPS
-  * End protocol (RECEV_BUF[4] == 99) checked
-* 2020.08.03 Beta 1.5 Version: Minor update 2
-  * Now possible to send detection state to FCC
-  * GUI display modified, now displays mission state, lat and lon
-* 2020.08.10 Beta 1.6 Version: Minor update
-  * int cnt added for Global extern
-  * README.md updated for new Jetson and PNUAV systems (Gimbal PWM calibrated)
-* 2020.08.13 Beta 2.0 Version: Major update
-  * Calculated position increasing problem modified
-  * The problem was the local variable "output" in function "matrixmul"
-* 2020.08.20 Beta 3.0 Version: Major update after FT
-  * Calculated position error due to *1000 in DetecObj.cpp/double J modified
-  * DetecObj.cpp had modified to increase the readability
-* 2020.08.21 Beta 4.0 Version: Major update
-  * Position estimation accuracy increased by modifying the algorithm
-  * Now possible to detect multiple obstacles and target simultaneously
-  * Also multiple position calculation and logging now available
-* 2020.08.21 Beta 4.1 Version: Minor update after FT
-  * Position estimation accuracy increased by modifying the algorithm
-  * Calculation in x' modified (cos(tilt))
-* 2020.08.27 Beta 4.2 Version: Minor update after FT
-  * Position estimation accuracy increased by modifying the algorithm
-  * Body-frame x and y bias problem modified
-* 2020.09.04 Beta 4.3 Version: Minor update after FT
-  * Position estimation accuracy increased by modifying the algorithm
-  * Body-frame x and y bias problem modified (x direction bias 0.7m)
-* 2020.09.11 Beta 4.4 Version: Minor update after FT
-  * Modified for the YOLO working when UGV driving the path
-* 2020.09.22 Beta 4.5 Version: Minor update after FT
-  * Obstacle and target all tested
-  * All functions working tested
-  * Display of detected obstacle position modified
-
-* 2020.10.12 Release 1.0 Version: Release version
-  * Obstacle and target all tested
-  * All functions working tested
-  * Displayed information of detection modified
-* 2020.10.13 Release 1.1 Version: Minor update after FT
-  * Displayed information position modifed
-  * Target position update modified
-* 2020.10.19 Release 1.2 Version: Minor update after FT
-  * Minor updates in DetecObj
-* 2020.11.12 Release 1.2.1 Version: Alternative version of 1.2
-  * Bug fixed -> counting fixed to address mission sequence failure
-* 2021.01.27 Release 1.2.2 Version: Minor arrangements
-  * Minor arrangements
-
-
-***
 ## 1. Software Introduction
 
- This is the software for the ICT Project 2020 flight tests. Main purposes of this software are detecting obstacles and target using YOLOv3 based on cuDNN and calculating the Geodetic coordinate position of those objects. This software had programmed to be worked properly on PNUAV-R2 and PNUAV-R3(Also any other platform which have same configuration).
+ This is the software for the ICT Project 2020 flight tests. Main purposes of this software is detecting obstacles and target using YOLOv3 based on cuDNN and calculating the Geodetic coordinate position of those objects. This software had programmed to be worked properly on PNUAV-R2 and PNUAV-R3 (Also any other platform which have same configuration).
 
-**Developed by Samuel Sukkeun Kim**
+Further information of this software can be found from following paper:
+[ICT Paper](https://doi.org/10.1007/s42405-021-00355-1)
+
+**Developed by Sukkeun Kim**
 **Flight Dynamics Lab., Dept. of Aerospace Eng., Pusan National University, Korea**
-* Email: <samkim96@pusan.ac.kr>
+* Email: <s.kim.aero@gmail.com>
 
 ## 2. Software Modules
 
@@ -150,8 +68,90 @@
 	>$ cmake ..  
 	>$ make -j4  
 	>$ sudo ./ICT_2020
-    
-***
+	
+## 6. Version Information
+
+* 2020.06.02 Beta 0.0: First Commit
+* 2020.06.04 Beta 0.1: Updated README.md and Minor Update
+  * README.md edited
+  * PWM channel info changed -> Ch.0 for pan & Ch.1 for tilt
+  * Serial port reset rate changed -> 1/100 -> 1/30
+* 2020.06.08 Beta 0.5: Updated README.md and Detection Position Module update
+  * README.md edited
+  * CMakeLists.txt edited
+  * Detect postition module updated
+* 2020.06.09 Beta 1.0: Main Header File and Detection Module update
+  * CMakeLists.txt edited
+  * ICT_2020.h created to use global variables as extern
+  * Serial initiating and reset function re-declared
+  * Detection result text file loggin modified
+  * Detection module modifed for use serial data
+  * Serial module modified for detected position data
+* 2020.06.10 Beta 1.1: Detection Module and Serial update
+  * Serial communication with FCC for detection modified
+  * Communication rate modified
+  * Detection result file and print-out modified
+* 2020.06.16 Beta 1.2: Minor update
+  * All header and cpp files modified to statified the Google C++ Style Guide
+* 2020.06.24 Beta 1.3: Minor update
+  * Communication delay problem modified
+  * Header file brief modified
+  * Detected object FPS information added
+  * Serial communication variable modified
+  * Video read check modified and video writer format modified
+  * VidDraw function modified to display inference time
+* 2020.08.03 Beta 1.4: Minor update
+  * Communication protocol size modified(Receive 22 to 26)
+  * UNIX time included in protocol
+  * Result logging Data modified, UNIX time added
+  * Video writer frame rate modified 5 FPS to 1 FPS
+  * End protocol (RECEV_BUF[4] == 99) checked
+* 2020.08.03 Beta 1.5: Minor update 2
+  * Now possible to send detection state to FCC
+  * GUI display modified, now displays mission state, lat and lon
+* 2020.08.10 Beta 1.6: Minor update
+  * int cnt added for Global extern
+  * README.md updated for new Jetson and PNUAV systems (Gimbal PWM calibrated)
+* 2020.08.13 Beta 2.0: Major update
+  * Calculated position increasing problem modified
+  * The problem was the local variable "output" in function "matrixmul"
+* 2020.08.20 Beta 3.0: Major update after FT
+  * Calculated position error due to *1000 in DetecObj.cpp/double J modified
+  * DetecObj.cpp had modified to increase the readability
+* 2020.08.21 Beta 4.0: Major update
+  * Position estimation accuracy increased by modifying the algorithm
+  * Now possible to detect multiple obstacles and target simultaneously
+  * Also multiple position calculation and logging now available
+* 2020.08.21 Beta 4.1: Minor update after FT
+  * Position estimation accuracy increased by modifying the algorithm
+  * Calculation in x' modified (cos(tilt))
+* 2020.08.27 Beta 4.2: Minor update after FT
+  * Position estimation accuracy increased by modifying the algorithm
+  * Body-frame x and y bias problem modified
+* 2020.09.04 Beta 4.3: Minor update after FT
+  * Position estimation accuracy increased by modifying the algorithm
+  * Body-frame x and y bias problem modified (x direction bias 0.7m)
+* 2020.09.11 Beta 4.4: Minor update after FT
+  * Modified for the YOLO working when UGV driving the path
+* 2020.09.22 Beta 4.5: Minor update after FT
+  * Obstacle and target all tested
+  * All functions working tested
+  * Display of detected obstacle position modified
+
+* 2020.10.12 Release 1.0: Release version
+  * Obstacle and target all tested
+  * All functions working tested
+  * Displayed information of detection modified
+* 2020.10.13 Release 1.1: Minor update after FT
+  * Displayed information position modifed
+  * Target position update modified
+* 2020.10.19 Release 1.2: Minor update after FT
+  * Minor updates in DetecObj
+* 2020.11.12 Release 1.2.1: Alternative version of 1.2
+  * Bug fixed -> counting fixed to address mission sequence failure
+* 2021.01.27 Release 1.2.2: Minor arrangements
+  * Minor arrangements
+
 ## Appendix 1: How to build required libraries on Jeston TX2
 
 1. Flash Jetpack to Jetson TX2 
@@ -280,6 +280,3 @@
 ```
 * Edit Makefile as below to use example code
 	> g++ servoExample.cpp ../src/JHPWMPCA9685.cpp -I../src -li2c -o servoExample
-
-
-
